@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPokemons } from '../../api/getPokemons.service';
 import PokemonList from '../../components/PokemonList';
 import Searcher from '../../components/Searcher';
-import { setPokemon } from '../../actions/';
+import { setError, setPokemon } from '../../actions/';
 import './styles.css';
+import axios from 'axios';
 
 // const mapStateToProps = state => ({
 // 	list: state.list,
@@ -18,9 +19,16 @@ const Home = () => {
 	const list = useSelector(state => state.list);
 
 	useEffect(() => {
-		getPokemons().then(response => {
-			dispatch(setPokemon(response.results));
-		});
+		getPokemons()
+			.then(response => {
+				const pokemonList = response.results;
+				return Promise.all(pokemonList.map(pokemon => axios.get(pokemon.url)));
+			})
+			.then(pokemonsResponse => {
+				const pokemonsData = pokemonsResponse.map(response => response.data);
+				dispatch(setPokemon(pokemonsData));
+			})
+			.catch(error => dispatch(setError({ message: 'Ocurrió un error' })));
 	}, [dispatch]);
 
 	return (

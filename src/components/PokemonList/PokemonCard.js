@@ -7,9 +7,17 @@ const PokemonCard = ({ pokemon }) => {
 		<Grid.Column mobile={16} tablet={8} computer={4}>
 			<div className="PokemonCard">
 				<Icon name="favorite" color={FAV_COLOR} />
-				<Image centered src="" alt="Pokemon Front" />
+				<Image
+					centered
+					src={pokemon.sprites.front_default}
+					alt="Pokemon Front"
+				/>
 				<p className="Pokemon-title">{pokemon.name}</p>
-				<Label color={MAIN_COLOR}>Normal</Label>
+				{pokemon.types.map(element => (
+					<Label color={MAIN_COLOR} key={`${pokemon.id}->${element.type.name}`}>
+						{element.type.name}
+					</Label>
+				))}
 			</div>
 		</Grid.Column>
 	);
